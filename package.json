@@ -1,0 +1,18 @@
+{
+  "name": "dankspots",
+  "version": "1.0.0",
+  "description": "The dank spots serverless backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "sam package --output-template packaged.yml --s3-bucket danksamrepo",
+    "deploy": "sam deploy --template-file packaged.yml --region us-west-1 --capabilities CAPABILITY_IAM --stack-name dank-spots-stack",
+    "deploy-local": "sam build && sam local start-api"
+  },
+  "author": "William Doudna",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-google": "^0.13.0"
+  }
+}
