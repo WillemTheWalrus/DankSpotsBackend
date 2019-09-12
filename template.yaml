@@ -11,6 +11,7 @@ Globals:
     Timeout: 3
 
 Resources:
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -35,6 +36,23 @@ Resources:
           Properties:
             Path: /spots
             Method: get
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: DankUserPool
+      Policies:
+        PasswordPolicy: 
+          MinimumLength: 8
+
+  UserPoolClient:
+    Type: AWS::Cognito:UserPoolClient
+    Properties: 
+      UserPoolId: !Ref UserPool
+      ClientName: DankUserPoolClient
+      GenerateSecret: no
+
+  
+  
 
 
 Outputs:

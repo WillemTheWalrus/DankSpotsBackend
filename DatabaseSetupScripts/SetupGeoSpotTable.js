@@ -3,7 +3,7 @@
  */
 'use strict';
 const AWS = require('aws-sdk');
-AWS.config.update({region: 'us-west-1'});
+AWS.config.update({region: 'us-west-2'});
 const ddb = new AWS.DynamoDB();
 
 const geoManager = require('dynamodb-geo');
@@ -13,9 +13,9 @@ const geoTableManager = new geoManager.GeoDataManager(config);
 const createTableInput = geoManager.GeoTableUtil.getCreateTableRequest(config);
 
 ddb.createTable(createTableInput).promise()
-    .then(function()
-    {return ddb.waitFor('tableExists', {TableName: config.tableName}).promise();
-})
+    .then(() => {
+      return ddb.waitFor('tableExists', {TableName: config.tableName}).promise();
+    })
     .then(function() {
-console.log('Table created and ready!');
-});
+      console.log('Table created and ready!');
+    });
