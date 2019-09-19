@@ -24,17 +24,29 @@ Resources:
           Properties:
             Path: /hello
             Method: get
-  GetAllSpotsFunction:
+  GetAllPublicSpotsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: SpotFunctions/
-      Handler: getAllSpots.getAllSpotsFunction
+      Handler: handler.getAllPublicSpotsFunction
       Runtime: nodejs8.10 
       Events:
         GetSpots:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /spots
+            Path: /spot
+            Method: get
+  GetPublicSpotFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: SpotFunctions/
+      Handler: handler.getPublicSpotFunction
+      Runtime: nodejs8.10 
+      Events:
+        GetSpots:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /spot
             Method: get
   UserPool:
     Type: AWS::Cognito::UserPool
@@ -45,15 +57,11 @@ Resources:
           MinimumLength: 8
 
   UserPoolClient:
-    Type: AWS::Cognito:UserPoolClient
-    Properties: 
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: dank-client
+      GenerateSecret: false
       UserPoolId: !Ref UserPool
-      ClientName: DankUserPoolClient
-      GenerateSecret: no
-
-  
-  
-
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

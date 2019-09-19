@@ -5,14 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "sam package --output-template packaged.yml --s3-bucket dankrepocode",
-    "deploy": "sam deploy --template-file packaged.yml --region us-west-1 --capabilities CAPABILITY_IAM --stack-name dank-spots-stack",
-    "deploy-local": "sam build && sam local start-api"
+    "build": "sam build",
+    "package": "sam package --output-template packaged.yml --s3-bucket dankrepocode --region us-west-2",
+    "deploy": "npm run package && sam deploy --template-file packaged.yml --region us-west-2 --capabilities CAPABILITY_IAM --stack-name dank-stack",
+    "deploy-local": "npm build && sam local start-api"
   },
   "author": "William Doudna",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^6.1.0",
     "eslint-config-google": "^0.13.0"
+  },
+  "dependencies": {
+    "randomstring": "^1.1.5"
   }
 }

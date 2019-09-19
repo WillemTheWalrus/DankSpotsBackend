@@ -10,10 +10,6 @@ exports.getAllSpotsFunction = (event, context, callback) => {
         sendResponse(200, response, callback);
       } );
 };
-
-exports.savePublicSpotfunction(event, context,callback) => {
-   databaseManager.
-}
 /**
  * Sends a response with the given content and status code
  * @param {*} statusCode
@@ -26,4 +22,8 @@ function sendResponse(statusCode, message, callback) {
     body: JSON.stringify(message),
   };
   callback(null, response);
+}
+
+exports.getPublicSpotFunction(event, context, callback) => {
+   databaseManager.
 }
