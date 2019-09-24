@@ -6,9 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "sam build",
-    "package": "sam package --output-template packaged.yml --s3-bucket dankrepocode --region us-west-2",
-    "deploy": "npm run package && sam deploy --template-file packaged.yml --region us-west-2 --capabilities CAPABILITY_IAM --stack-name dank-stack",
-    "deploy-local": "npm build && sam local start-api"
+    "package": "npm pack && sam package --output-template packaged.yml --s3-bucket dankrepocode --region us-west-2",
+    "deploy": "sam build && npm run package && sam deploy --template-file packaged.yml --region us-west-2 --capabilities CAPABILITY_IAM --stack-name dank-stack",
+    "deploy-local": "sam build && sam local start-api"
   },
   "author": "William Doudna",
   "license": "ISC",
@@ -17,6 +17,11 @@
     "eslint-config-google": "^0.13.0"
   },
   "dependencies": {
+    "crypto-random-string": "^3.0.1",
     "randomstring": "^1.1.5"
-  }
+  },
+  "bundleDependencies": [
+    "crypto-random-string"
+  ]
+  
 }

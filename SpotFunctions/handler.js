@@ -1,15 +1,23 @@
 'use strict';
+const geoSpotManager = require('../QueryManagers/GeoSpotManager');
+const tableNames = require('../QueryManagers/TableNames');
 
-const databaseManager = require('../QueryManager/GeoSpotManager');
-const tableNames = require('./TableNames');
-
-exports.getAllSpotsFunction = (event, context, callback) => {
-  databaseManager.getAllItemsFromTable(tableNames.names.spots)
+exports.getAllPublicSpotsFunction = (event, context, callback) => {
+  geoSpotManager.getAllSpots(tableNames.names.spots)
       .then((response) =>{
         console.log(response);
         sendResponse(200, response, callback);
-      } );
+      });
 };
+
+exports.savePublicSpotfunction = (event, context, callback) => {
+  geoSpotManager.saveSpot(event.body.spot)
+      .then((response) => {
+        console.log(event.body.spot.name);
+        sendResponse(200, response, callback);
+      });
+};
+
 /**
  * Sends a response with the given content and status code
  * @param {*} statusCode
@@ -22,8 +30,4 @@ function sendResponse(statusCode, message, callback) {
     body: JSON.stringify(message),
   };
   callback(null, response);
-}
-
-exports.getPublicSpotFunction(event, context, callback) => {
-   databaseManager.
 }
