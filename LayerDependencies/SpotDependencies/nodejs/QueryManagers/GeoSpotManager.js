@@ -1,9 +1,11 @@
 'use strict';
-const tableNames = require('./TableNames');
+// eslint-disable-next-line max-len
+const tableNames = require('/opt/nodejs/QueryManagers/TableNames');
 const cryptoRandomString = require('crypto-random-string');
 const AWS = require('aws-sdk');
 AWS.config.update({region: 'us-west-2'});
 const ddb = new AWS.DynamoDB();
+const dynamoClient = new AWS.DynamoDB.DocumentClient();
 const geoManager = require('dynamodb-geo');
 const config = new geoManager.GeoDataManagerConfiguration(ddb, 'SpotGeoTable');
 const geoTableManager = new geoManager.GeoDataManager(config);
@@ -13,9 +15,11 @@ module.exports.initializeDynamoClient = (newDynamo) => {
 };
 
 module.exports.getAllPublicSpots = () => {
+  console.log('table name: ' + tableNames.names.spots);
   const params = {
-    TableName: tableNames.spots,
-    KeyConditionExpression: '#isPrivate = :isPrivate',
+    TableName: tableNames.names.spots,
+    ProjectionExpression: '#isPrivate, hashKey, rangeKey, spotName, geoHash',
+    FilterExpression: '#isPrivate = :isPrivate',
     ExpressionAttributeNames: {
       '#isPrivate': 'isPrivate',
     },
@@ -24,7 +28,7 @@ module.exports.getAllPublicSpots = () => {
     },
   };
 
-  return dynamo.query(params).promise();
+  return dynamoClient.scan(params).promise();
 };
 
 module.exports.getSpotById = (hashKey, rangeKey) => {

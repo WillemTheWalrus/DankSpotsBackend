@@ -1,9 +1,9 @@
 'use strict';
-const geoSpotManager = require('../QueryManagers/GeoSpotManager');
-const tableNames = require('../QueryManagers/TableNames');
+const geoSpotManager = require('/opt/nodejs/QueryManagers/GeoSpotManager');
+const tableNames = require('/opt/nodejs/QueryManagers/TableNames');
 
 exports.getAllPublicSpotsFunction = (event, context, callback) => {
-  geoSpotManager.getAllSpots(tableNames.names.spots)
+  geoSpotManager.getAllPublicSpots(tableNames.names.spots)
       .then((response) =>{
         console.log(response);
         sendResponse(200, response, callback);

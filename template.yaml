@@ -24,24 +24,30 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+            
   GetAllPublicSpotsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: SpotFunctions/
       Handler: handler.getAllPublicSpotsFunction
-      Runtime: nodejs8.10 
+      Runtime: nodejs8.10
+      Layers: 
+        - !Ref SpotLayer 
       Events:
         GetSpots:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /spot
             Method: get
+
   SavePublicSpotFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: SpotFunctions/
       Handler: handler.savePublicSpotFunction
-      Runtime: nodejs8.10 
+      Runtime: nodejs8.10
+      Layers: 
+        - !Ref SpotLayer 
       Events:
         GetSpots:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -49,18 +55,17 @@ Resources:
             Path: /spot
             Method: post
 
-  # GetPublicSpotFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: SpotFunctions/
-  #     Handler: handler.getPublicSpotsFunction
-  #     Runtime: nodejs8.10 
-  #     Events:
-  #       GetSpots:
-  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-  #         Properties:
-  #           Path: /spot
-  #           Method: get
+  SpotLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: spot-dependencies
+      Description: Dependencies for spot functions
+      ContentUri: LayerDependencies/SpotDependencies
+      CompatibleRuntimes:
+        - nodejs8.10
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
