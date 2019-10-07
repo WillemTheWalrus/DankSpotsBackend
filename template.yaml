@@ -44,7 +44,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: SpotFunctions/
-      Handler: handler.savePublicSpotFunction
+      Handler: handler.savePublicSpot
       Runtime: nodejs8.10
       Layers: 
         - !Ref SpotLayer 

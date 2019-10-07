@@ -34,10 +34,11 @@ module.exports.getAllPublicSpots = () => {
 module.exports.getSpotById = (hashKey, rangeKey) => {
 
 };
-
+//cryptoRandomString({length: 10, type: 'url-safe'})
 module.exports.saveSpot = (spot) => {
+  console.log('latitude: ' + spot.latitude);
   return geoTableManager.putPoint({
-    RangeKeyValue: {S: cryptoRandomString({length: 10, type: 'url-safe'})},
+    RangeKeyValue: {S:'3333'},
     GeoPoint: {
       latitude: spot.latitude,
       longitude: spot.longitude,

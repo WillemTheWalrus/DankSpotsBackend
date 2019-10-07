@@ -2,6 +2,14 @@
 const geoSpotManager = require('/opt/nodejs/QueryManagers/GeoSpotManager');
 const tableNames = require('/opt/nodejs/QueryManagers/TableNames');
 
+
+/**
+ * Gets all public spots and sends them back in the callback function.
+ * @param {json} event contains path, headers, http method, and body.
+ * @param {json} context  contains environment data.
+ * @param {function} callback  contains the callback method to be
+ *  called when the function has finished executing.
+ */
 exports.getAllPublicSpotsFunction = (event, context, callback) => {
   geoSpotManager.getAllPublicSpots(tableNames.names.spots)
       .then((response) =>{
@@ -10,10 +18,21 @@ exports.getAllPublicSpotsFunction = (event, context, callback) => {
       });
 };
 
-exports.savePublicSpotfunction = (event, context, callback) => {
-  geoSpotManager.saveSpot(event.body.spot)
+/**
+ * Saves a public spot.
+ * @param {json} event contains path, headers, http method, and body.
+ * @param {json} context  contains environment data.
+ * @param {function} callback  contains the callback method to be
+ *  called when the function has finished executing.
+ */
+exports.savePublicSpot = (event, context, callback) => {
+  // Right the body comes in as text instead of JSON.
+  // Need to investigate why this happening despite
+  // the incluse of the application/JSON header.
+  const spotJSON = JSON.parse(event.body);
+  geoSpotManager.saveSpot(spotJSON.spot)
       .then((response) => {
-        console.log(event.body.spot.name);
+        console.log('chillen');
         sendResponse(200, response, callback);
       });
 };

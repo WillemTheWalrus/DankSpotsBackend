@@ -12,16 +12,14 @@
   },
   "author": "William Doudna",
   "license": "ISC",
+  "repository": "https://github.com/WillemTheWalrus/DankSpotsBackend.git",
   "devDependencies": {
+    "chai": "^4.2.0",
     "eslint": "^6.1.0",
-    "eslint-config-google": "^0.13.0"
+    "eslint-config-google": "^0.13.0",
+    "mocha": "^6.2.1"
   },
   "dependencies": {
-    "crypto-random-string": "^3.0.1",
-    "randomstring": "^1.1.5"
-  },
-  "bundleDependencies": [
-    "crypto-random-string"
-  ]
-  
+    "crypto-random-string": "^3.0.1"
+  }
 }
