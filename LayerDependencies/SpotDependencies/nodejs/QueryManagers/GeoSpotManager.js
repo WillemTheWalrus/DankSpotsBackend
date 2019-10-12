@@ -1,6 +1,6 @@
 'use strict';
 // eslint-disable-next-line max-len
-const tableNames = require('/opt/nodejs/QueryManagers/TableNames');
+const tableNames = require('./TableNames');
 const cryptoRandomString = require('crypto-random-string');
 const AWS = require('aws-sdk');
 AWS.config.update({region: 'us-west-2'});
@@ -31,9 +31,6 @@ module.exports.getAllPublicSpots = () => {
   return dynamoClient.scan(params).promise();
 };
 
-module.exports.getSpotById = (hashKey, rangeKey) => {
-
-};
 //cryptoRandomString({length: 10, type: 'url-safe'})
 module.exports.saveSpot = (spot) => {
   console.log('latitude: ' + spot.latitude);
