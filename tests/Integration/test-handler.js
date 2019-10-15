@@ -11,7 +11,7 @@ const validator =
   require('../../LayerDependencies/SpotDependencies/nodejs/spotValidator');
 
 describe('Test get all spot function ', () => {
-  it('callback', (done) => {
+  it('should return a json object with all the valid spot data', (done) => {
     try {
       axios.get('http://127.0.0.1:3000/spot').then((result) => {
         assert.isObject(result);
