@@ -45,5 +45,4 @@ describe('Spot validating ', () => {
     assert.isBoolean(result);
     assert.isTrue(result);
   });
-  
 });

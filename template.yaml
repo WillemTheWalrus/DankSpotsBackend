@@ -53,6 +53,20 @@ Resources:
       LicenseInfo: 'MIT'
       RetentionPolicy: Retain
 
+  # ServiceApi: 
+  #   DependsOn: UserPool
+  #   Type: AWS::Serverless::Api
+  #   Properties:
+  #     Name: ServiceApi
+  #     Cors:
+  #       AllowMethods: "'*'"
+  #       AllowHeaders: "'*'"
+  #       AllowOrigin: "'*'"
+  #     Auth:
+  #       Authorizers:
+  #         CognitoAuthorizer:
+  #           UserPoolArn: !GetAtt "UserPool.Arn"
+
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
