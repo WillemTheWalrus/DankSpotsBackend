@@ -11,7 +11,7 @@ const tableNames = require('/opt/nodejs/QueryManagers/TableNames');
  *  called when the function has finished executing.
  */
 exports.getAllPublicSpotsFunction = (event, context, callback) => {
-  geoSpotManager.getAllPublicSpots(tableNames.names.spots)
+  geoSpotManager.getAllPublicSpots()
       .then((response) =>{
         console.log(response);
         sendResponse(200, response, callback);
@@ -36,6 +36,23 @@ exports.savePublicSpot = (event, context, callback) => {
         sendResponse(200, response, callback);
       });
 };
+
+exports.getSpotById= (event, context, callback) => {
+  // Right the body comes in as text instead of JSON.
+  // Need to investigate why this happening despite
+  // the incluse of the application/JSON header.
+  let hashKey = event.pathParameters.hashKey;
+  let rangeKey = event.pathParameters.rangeKey;
+  geoSpotManager.getSpotById(hashKey, rangeKey)
+      .then((response) => {
+        //console.log('Loading Location: ' + event.pathParameters.);
+        // Only can pass in built path parameters that are within template.yaml
+        console.log(response);
+        sendResponse(200, response, callback);
+      });
+
+};
+
 
 /**
  * Sends a response with the given content and status code

@@ -46,6 +46,29 @@ module.exports.getAllSpotsInCirle = ( centerLongitude, centerLatitude, radiusLen
 };
 
 // cryptoRandomString({length: 10, type: 'url-safe'})
+module.exports.getSpotById = (hashKey, rangeKey) => {
+  //do i need to reference the entire path? tableNames.names.spots
+  var params = {
+    TableName: tableNames.names.spots,
+    //this is referenced at the top of the page 
+    //Is this command just taking you to the database? Based off of the TableNames file you created? 
+    // Does it need to be capitalized? 
+    ProjectionExpression: '#isPrivate, #hashKey, #rangeKey, spotName, geoHash',
+    KeyConditionExpression: "#hashKey = :hashKey AND #rangeKey = :rangeKey", 
+
+    ExpressionAttributeNames:{
+        "#hashKey" : "hashKey",
+        "#rangeKey" : "rangeKey"
+    },
+    ExpressionAttributeValues: {
+        ":hashKey": hashKey,
+        ":rangeKey": rangeKey
+    }
+  };
+    return dynamoClient.query(params).promise();
+};
+
+//cryptoRandomString({length: 10, type: 'url-safe'})
 module.exports.saveSpot = (spot) => {
   console.log('latitude: ' + spot.latitude);
   return geoTableManager.putPoint({
