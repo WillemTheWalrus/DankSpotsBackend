@@ -37,15 +37,27 @@ exports.savePublicSpot = (event, context, callback) => {
       });
 };
 
+exports.updateSpot = (event, context, callback) => {
+  // Right the body comes in as text instead of JSON.
+  // Need to investigate why this happening despite
+  // the incluse of the application/JSON header.
+  const spotJSON = JSON.parse(event.body);
+  geoSpotManager.updateSpot(spotJSON.spot)
+      .then((response) => {
+        console.log('It works!');
+        sendResponse(200, response, callback);
+      });
+};
+
 exports.getSpotById= (event, context, callback) => {
   // Right the body comes in as text instead of JSON.
   // Need to investigate why this happening despite
   // the incluse of the application/JSON header.
-  let hashKey = event.pathParameters.hashKey;
-  let rangeKey = event.pathParameters.rangeKey;
+  const hashKey = event.pathParameters.hashKey;
+  const rangeKey = event.pathParameters.rangeKey;
   geoSpotManager.getSpotById(hashKey, rangeKey)
       .then((response) => {
-        //console.log('Loading Location: ' + event.pathParameters.);
+        // console.log('Loading Location: ' + event.pathParameters.);
         // Only can pass in built path parameters that are within template.yaml
         console.log(response);
         sendResponse(200, response, callback);

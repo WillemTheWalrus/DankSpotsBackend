@@ -47,28 +47,29 @@ module.exports.getAllSpotsInCirle = ( centerLongitude, centerLatitude, radiusLen
 
 // cryptoRandomString({length: 10, type: 'url-safe'})
 module.exports.getSpotById = (hashKey, rangeKey) => {
-  //do i need to reference the entire path? tableNames.names.spots
-  var params = {
+  // do i need to reference the entire path? tableNames.names.spots
+  const params = {
     TableName: tableNames.names.spots,
-    //this is referenced at the top of the page 
-    //Is this command just taking you to the database? Based off of the TableNames file you created? 
-    // Does it need to be capitalized? 
-    ProjectionExpression: '#isPrivate, #hashKey, #rangeKey, spotName, geoHash',
-    KeyConditionExpression: "#hashKey = :hashKey AND #rangeKey = :rangeKey", 
+    // this is referenced at the top of the page
+    // Is this command just taking you to the database? Based off of the TableNames file you created?
+    // Does it need to be capitalized?
+    // ProjectionExpression: '#isPrivate, #hashKey, #rangeKey, spotName, geoHash',
 
-    ExpressionAttributeNames:{
-        "#hashKey" : "hashKey",
-        "#rangeKey" : "rangeKey"
+    KeyConditionExpression: '#hashKey = :hashKey AND #rangeKey = :rangeKey',
+
+    ExpressionAttributeNames: {
+      '#hashKey': 'hashKey',
+      '#rangeKey': 'rangeKey',
     },
     ExpressionAttributeValues: {
-        ":hashKey": hashKey,
-        ":rangeKey": rangeKey
-    }
+      ':hashKey': hashKey,
+      ':rangeKey': rangeKey,
+    },
   };
-    return dynamoClient.query(params).promise();
+  return dynamoClient.query(params).promise();
 };
 
-//cryptoRandomString({length: 10, type: 'url-safe'})
+// cryptoRandomString({length: 10, type: 'url-safe'})
 module.exports.saveSpot = (spot) => {
   console.log('latitude: ' + spot.latitude);
   return geoTableManager.putPoint({
@@ -82,6 +83,30 @@ module.exports.saveSpot = (spot) => {
         spotName: {S: spot.name},
         submittedBy: {S: spot.submittedBy},
         isPrivate: {BOOL: spot.isPrivate},
+      },
+    },
+  }).promise();
+};
+
+module.exports.updateSpot = (spot) => {
+  console.log('Rating: ' + spot.rating);
+  return geoTableManager.updatePoint({
+    RangeKeyValue: {S: spot.rangeKey},
+    // what does the uuid do? I saw where it is defined but unsure (require('uuid/v1');)
+    GeoPoint: {
+      latitude: spot.latitude,
+      longitude: spot.longitude,
+    },
+    UpdateItemInput: {// TableName and Key are filled in for you
+      UpdateExpression: 'SET  isPrivate = :isPrivate ,' +
+                              'spotName = :spotName , ' +
+                              'submittedBy = :submittedBy ,'+
+                              'rating = :rating',
+      ExpressionAttributeValues: {
+        ':isPrivate': {BOOL: spot.isPrivate},
+        ':spotName': {S: spot.spotName},
+        ':submittedBy': {S: spot.submittedBy},
+        ':rating': {N: spot.rating.toString()},
       },
     },
   }).promise();

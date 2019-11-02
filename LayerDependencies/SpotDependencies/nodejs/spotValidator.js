@@ -19,5 +19,9 @@ exports.validateSpot = (spot) => {
     console.log('invalid isPrivate field');
     return false;
   }
+  if (!spot.rating || !typeof spot.rating === 'number') {
+    console.log('invalid rating');
+    return false;
+  }
   return true;
 };

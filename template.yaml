@@ -58,6 +58,21 @@ Resources:
             #Path PArameters -- access in event.pathParameters.hashKey....
             Method: get
 
+  updateSpot:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: SpotFunctions/
+      Handler: handler.updateSpot
+      Runtime: nodejs8.10
+      Layers: 
+        - !Ref SpotLayer 
+      Events:
+        GetSpots:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /spot
+            Method: put
+
 
   SpotLayer:
     Type: AWS::Serverless::LayerVersion
