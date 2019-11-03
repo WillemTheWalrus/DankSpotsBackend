@@ -1,0 +1,15 @@
+{
+  "name": "databasesetupscripts",
+  "version": "1.0.0",
+  "description": "Project for setting the dynamo-db geo spot table",
+  "main": "SetupGeoSpotTable.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "William Doudna",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.553.0",
+    "dynamodb-geo": "^0.4.0"
+  }
+}

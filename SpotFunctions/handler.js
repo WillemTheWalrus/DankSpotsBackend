@@ -1,6 +1,6 @@
 'use strict';
 const geoSpotManager = require('/opt/nodejs/QueryManagers/GeoSpotManager');
-const tableNames = require('/opt/nodejs/QueryManagers/TableNames');
+const spotValidator = require('/opt/nodejs/spotValidator');
 
 
 /**
@@ -16,6 +16,19 @@ exports.getAllPublicSpotsFunction = (event, context, callback) => {
         console.log(response);
         sendResponse(200, response, callback);
       });
+};
+
+exports.getAllSpotsInCircle = (event, context, callback) => {
+  const radiusInMeters = parseInt(event.queryStringParameters.radius);
+  const latitude = parseFloat(event.queryStringParameters.latitude);
+  const longitude = parseFloat(event.queryStringParameters.longitude);
+
+  geoSpotManager.getAllSpotsInCircle(longitude, latitude, radiusInMeters).then((response) => {
+    console.log('response: ' + response);
+    sendResponse(200, response, callback);
+  }).catch((error) => {
+    console.log('error while executing radial query: ' + error);
+  });
 };
 
 /**
@@ -42,11 +55,15 @@ exports.updateSpot = (event, context, callback) => {
   // Need to investigate why this happening despite
   // the incluse of the application/JSON header.
   const spotJSON = JSON.parse(event.body);
-  geoSpotManager.updateSpot(spotJSON.spot)
-      .then((response) => {
-        console.log('It works!');
-        sendResponse(200, response, callback);
-      });
+  if (!spotValidator.validateSpot(spotJSON)) {
+    sendResponse(400, 'Incorrectly formated spot', callback);
+  } else {
+    geoSpotManager.updateSpot(spotJSON.spot)
+        .then((response) => {
+          console.log('It works!');
+          sendResponse(200, response, callback);
+        });
+  }
 };
 
 exports.getSpotById= (event, context, callback) => {
@@ -62,7 +79,6 @@ exports.getSpotById= (event, context, callback) => {
         console.log(response);
         sendResponse(200, response, callback);
       });
-
 };
 
 

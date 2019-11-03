@@ -5,7 +5,7 @@ const geoManager = require('dynamodb-geo');
 const AWS = require('aws-sdk');
 AWS.config.update({region: 'us-west-2'});
 const ddb = new AWS.DynamoDB();
-const config = new geoManager.GeoDataManagerConfiguration(ddb, 'SpotGeoTable');
+const config = new geoManager.GeoDataManagerConfiguration(ddb, tableNames.names.spots);
 const geoTableManager = new geoManager.GeoDataManager(config);
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
 
@@ -31,10 +31,19 @@ module.exports.getAllPublicSpots = () => {
 };
 
 
-module.exports.getAllSpotsInCirle = ( centerLongitude, centerLatitude, radiusLengthInMeters) => {
-  if (!centerLatitude || !typeof centerLatitude === 'number') throw TypeError;
-  if ( !centerLongitude || !typeof centerLongitude === 'number') throw TypeError;
-  if ( !radiusLengthInMeters || typeof radiusLengthInMeters === 'number') throw TypeError;
+module.exports.getAllSpotsInCircle = ( centerLongitude, centerLatitude, radiusLengthInMeters) => {
+  if (!centerLongitude || !typeof centerLongitude === 'number') {
+    console.log('incorrect longitude type');
+    throw new TypeError('incorrect longitude type!');
+  }
+  if (!centerLatitude || !typeof centerLatitude === 'number') {
+    console.log('incorrect latitude type');
+    throw new TypeError('incorrect latitude type!');
+  }
+  if (!radiusLengthInMeters || !typeof radiusLengthInMeters === 'number') {
+    console.log('incorrect radius type');
+    throw new TypeError('incorrect radius type!');
+  }
 
   return geoTableManager.queryRadius({
     RadiusInMeter: radiusLengthInMeters,
@@ -45,15 +54,11 @@ module.exports.getAllSpotsInCirle = ( centerLongitude, centerLatitude, radiusLen
   });
 };
 
-// cryptoRandomString({length: 10, type: 'url-safe'})
+
 module.exports.getSpotById = (hashKey, rangeKey) => {
   // do i need to reference the entire path? tableNames.names.spots
   const params = {
     TableName: tableNames.names.spots,
-    // this is referenced at the top of the page
-    // Is this command just taking you to the database? Based off of the TableNames file you created?
-    // Does it need to be capitalized?
-    // ProjectionExpression: '#isPrivate, #hashKey, #rangeKey, spotName, geoHash',
 
     KeyConditionExpression: '#hashKey = :hashKey AND #rangeKey = :rangeKey',
 
@@ -69,7 +74,7 @@ module.exports.getSpotById = (hashKey, rangeKey) => {
   return dynamoClient.query(params).promise();
 };
 
-// cryptoRandomString({length: 10, type: 'url-safe'})
+
 module.exports.saveSpot = (spot) => {
   console.log('latitude: ' + spot.latitude);
   return geoTableManager.putPoint({
@@ -111,5 +116,3 @@ module.exports.updateSpot = (spot) => {
     },
   }).promise();
 };
-
-

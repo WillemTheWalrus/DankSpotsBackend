@@ -24,6 +24,7 @@ Resources:
         GetSpots:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref ServiceApi
             Path: /spot
             Method: get
 
@@ -39,8 +40,25 @@ Resources:
         GetSpots:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref ServiceApi
             Path: /spot
             Method: post
+
+  getSpotsInCircle:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: SpotFunctions/
+      Handler: handler.getAllSpotsInCircle
+      Runtime: nodejs8.10
+      Layers: 
+        - !Ref SpotLayer 
+      Events:
+        GetSpots:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref ServiceApi
+            Path: /spot/radial
+            Method: get
   
   getSpotById:
     Type: AWS::Serverless::Function
@@ -54,8 +72,8 @@ Resources:
         GetSpots:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /spot/{hashkey}/{rangeKey}
-            #Path PArameters -- access in event.pathParameters.hashKey....
+            RestApiId: !Ref ServiceApi
+            Path: /spot/{hashKey}/{rangeKey}
             Method: get
 
   updateSpot:
@@ -85,19 +103,16 @@ Resources:
       LicenseInfo: 'MIT'
       RetentionPolicy: Retain
 
-  # ServiceApi: 
-  #   DependsOn: UserPool
-  #   Type: AWS::Serverless::Api
-  #   Properties:
-  #     Name: ServiceApi
-  #     Cors:
-  #       AllowMethods: "'*'"
-  #       AllowHeaders: "'*'"
-  #       AllowOrigin: "'*'"
-  #     Auth:
-  #       Authorizers:
-  #         CognitoAuthorizer:
-  #           UserPoolArn: !GetAtt "UserPool.Arn"
+  ServiceApi: 
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors: "'*'"
+      Auth:
+        DefualtAuthorizer: DankCognitoAuthorizer
+        Authorizers:
+          DankCognitoAuthorizer:
+            UserPoolArn: !GetAtt "UserPool.Arn"
 
   UserPool:
     Type: AWS::Cognito::UserPool
@@ -106,6 +121,12 @@ Resources:
       Policies:
         PasswordPolicy: 
           MinimumLength: 8
+      UsernameAttributes:
+        - email
+      Schema:
+        - AttributeDataType: String
+          Name: email
+          Required: false
 
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -114,16 +135,16 @@ Resources:
       GenerateSecret: false
       UserPoolId: !Ref UserPool
 
-Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+# Outputs:
+#   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+#   # Find out more about other implicit resources you can reference within SAM
+#   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+#   HelloWorldApi:
+#     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+#     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+#   HelloWorldFunction:
+#     Description: "Hello World Lambda Function ARN"
+#     Value: !GetAtt HelloWorldFunction.Arn
+#   HelloWorldFunctionIamRole:
+#     Description: "Implicit IAM Role created for Hello World function"
+#     Value: !GetAtt HelloWorldFunctionRole.Arn
