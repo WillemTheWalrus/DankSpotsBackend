@@ -9,8 +9,6 @@
   "author": "William Doudna",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.537.0",
-    "crypto-random-string": "^3.0.1",
     "dynamodb-geo": "^0.4.0",
     "uuid": "^3.3.3"
   }

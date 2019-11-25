@@ -12,18 +12,15 @@ const validator =
 
 describe('Test get all spot function ', () => {
   it('should return a json object with all the valid spot data', (done) => {
-    try {
-      axios.get('http://127.0.0.1:3000/spot').then((result) => {
-        assert.isObject(result);
-        assert.equal(200, result.status);
-        _.forEach(result.Items, (spot) =>{
-          assert.equal(validator.validateSpot(spot), true);
-        });
-        done();
+    axios.get('http://127.0.0.1:3000/spot').then((result) => {
+      assert.isObject(result);
+      assert.equal(200, result.status);
+      _.forEach(result.data.Items, (spot) => {
+        assert.equal(validator.validateSpot(spot), true);
       });
-    } catch (err) {
-      done(err);
-    }
+      done();
+    }).catch((error) => {
+      done(error);
+    });
   });
 });
-

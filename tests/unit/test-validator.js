@@ -17,11 +17,11 @@ const invalidSpotJson = {
 };
 
 const validSpotJson = {
-  latitude: 41.083922,
-  longitude: -124.133875,
+  geoJson: '{"type":"POINT","coordinates":[-117.199236,32.834245]}',
   spotName: 'Strawberry Rock',
   submittedBy: 'will',
   isPrivate: false,
+  rating: 0,
 };
 
 describe('Spot validating ', () => {

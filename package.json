@@ -7,7 +7,7 @@
     "test": "mocha --timeout=100000 tests\\Integration\\test-handler.js && mocha tests\\unit\\test-GeoSpotManager.js && mocha tests\\unit\\test-validator.js",
     "build": "sam build",
     "package": "npm pack && sam package --output-template packaged.yml --s3-bucket dankrepocode --region us-west-2",
-    "deploy": "sam build && npm run package && sam deploy --template-file packaged.yml --region us-west-2 --capabilities CAPABILITY_IAM --stack-name dank-stack",
+    "deploy": "sam build && npm run package && sam deploy --template-file packaged.yml --region us-west-2 --capabilities CAPABILITY_IAM --stack-name dank-spots",
     "deploy-local": "sam build && sam local start-api"
   },
   "author": "William Doudna",
