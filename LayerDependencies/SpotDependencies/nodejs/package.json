@@ -9,6 +9,7 @@
   "author": "William Doudna",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.585.0",
     "dynamodb-geo": "^0.4.0",
     "uuid": "^3.3.3"
   }

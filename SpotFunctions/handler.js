@@ -10,7 +10,7 @@ const spotValidator = require('/opt/nodejs/spotValidator');
  * @param {function} callback  contains the callback method to be
  *  called when the function has finished executing.
  */
-exports.getAllPublicSpotsFunction = (event, context, callback) => {
+exports.getAllPublicSpots = (event, context, callback) => {
   geoSpotManager.getAllPublicSpots()
       .then((response) => {
         console.log(response);
@@ -34,20 +34,21 @@ exports.getAllSpotsInCircle = (event, context, callback) => {
   let longitude = event.queryStringParameters.longitude;
 
   if (!radiusInMeters) sendResponse(400, 'radius cannot be null!', callback);
-  if (!latitude) sendResponse(400, 'The latitude cannot be null!', callback);
-  if (!longitude) sendResponse(400, 'The longitude cannot be null!', callback);
+  else if (!latitude) sendResponse(400, 'The latitude cannot be null!', callback);
+  else if (!longitude) sendResponse(400, 'The longitude cannot be null!', callback);
+  else {
+    radiusInMeters = parseInt(event.queryStringParameters.radius);
+    latitude = parseFloat(event.queryStringParameters.latitude);
+    longitude = parseFloat(event.queryStringParameters.longitude);
 
-  radiusInMeters = parseInt(event.queryStringParameters.radius);
-  latitude = parseFloat(event.queryStringParameters.latitude);
-  longitude = parseFloat(event.queryStringParameters.longitude);
-
-  geoSpotManager.getAllSpotsInCircle(longitude, latitude, radiusInMeters).then((response) => {
-    console.log('response: ' + response);
-    sendResponse(200, response, callback);
-  }).catch((error) => {
-    console.log('error while executing radial query: ' + error);
-    sendResponse(500, 'Error executing radial query', callback);
-  });
+    geoSpotManager.getAllSpotsInCircle(longitude, latitude, radiusInMeters).then((response) => {
+      console.log('response: ' + response);
+      sendResponse(200, response, callback);
+    }).catch((error) => {
+      console.log('error while executing radial query: ' + error);
+      sendResponse(500, 'Error executing radial query', callback);
+    });
+  }
 };
 
 /**
@@ -68,6 +69,9 @@ exports.savePublicSpot = (event, context, callback) => {
       });
 };
 
+exports.deleteSpot = (event, context, callback) => {
+  console.log('in delete spot function');
+};
 /**
  * Updates a spot with the provided spot data.
  * @param {json} event contains path, headers, http method, and body.

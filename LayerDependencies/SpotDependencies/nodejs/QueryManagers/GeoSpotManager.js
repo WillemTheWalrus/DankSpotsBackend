@@ -34,10 +34,10 @@ module.exports.getAllPublicSpots = () => {
 
 /**
  * Gets all spots in a specified circle.
- * @param {number} centerLongitude contains the longitude of the center of the circle.
- * @param {number} centerLatitude conatins the latitude of the center of the circle.
- * @param {number} radiusLengthInMeters contains the length of the radius of the circle in meters.
- * @return {json} Returns all of the spots in the specified circle.
+ * @param {Number} centerLongitude contains the longitude of the center of the circle.
+ * @param {Number} centerLatitude conatins the latitude of the center of the circle.
+ * @param {Number} radiusLengthInMeters contains the length of the radius of the circle in meters.
+ * @return {JSON} Returns all of the spots in the specified circle.
  */
 module.exports.getAllSpotsInCircle = (centerLongitude, centerLatitude, radiusLengthInMeters) => {
   if (!centerLongitude || !typeof centerLongitude === 'number') {
@@ -89,11 +89,10 @@ module.exports.getSpotById = (hashKey, rangeKey) => {
 
 /**
  * Saves a new spot.
- * @param {json} spot contains the spot to be saved.
+ * @param {JSON} spot contains the spot to be saved.
  * @return {Promise} Returns a promise that can be used to save a spot.
  */
 module.exports.saveSpot = (spot) => {
-  console.log('latitude: ' + spot.latitude);
   return geoTableManager.putPoint({
     RangeKeyValue: {
       S: uuid(),
@@ -123,16 +122,14 @@ module.exports.saveSpot = (spot) => {
 
 /**
  * Update a spot with new data.
- * @param {json} spot contains the updated version of the spot to be saved.
+ * @param {JSON} spot contains the updated version of the spot to be saved.
  * @return {Promise} Returns a promise that can be used to update spots.
  */
 module.exports.updateSpot = (spot) => {
-  console.log('Rating: ' + spot.rating);
   return geoTableManager.updatePoint({
     RangeKeyValue: {
       S: spot.rangeKey,
     },
-    // what does the uuid do? I saw where it is defined but unsure (require('uuid/v1');)
     GeoPoint: {
       latitude: spot.latitude,
       longitude: spot.longitude,

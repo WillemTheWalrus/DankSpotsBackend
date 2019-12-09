@@ -9,7 +9,10 @@
   "author": "William Doudna",
   "license": "ISC",
   "dependencies": {
+    "@google/maps": "^1.0.2",
     "aws-sdk": "^2.553.0",
-    "dynamodb-geo": "^0.4.0"
+    "dynamodb-geo": "^0.4.0",
+    "random-number": "0.0.9",
+    "uuid": "^3.3.3"
   }
 }

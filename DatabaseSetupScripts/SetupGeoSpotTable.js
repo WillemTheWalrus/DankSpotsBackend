@@ -9,6 +9,7 @@ AWS.config.update({region: 'us-west-2'});
 const ddb = new AWS.DynamoDB();
 const config = new geoManager.GeoDataManagerConfiguration(ddb, 'SpotGeoTable');
 config.hashKeyLength = 6;
+config.longitudeFirst = true;
 const createTableInput = geoManager.GeoTableUtil.getCreateTableRequest(config);
 
 ddb.createTable(createTableInput).promise()

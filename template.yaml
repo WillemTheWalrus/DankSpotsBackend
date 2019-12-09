@@ -30,11 +30,11 @@ Resources:
             UserPoolArn: !GetAtt UserPool.Arn
       
 
-  GetAllPublicSpotsFunction:
+  GetAllPublicSpots:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: SpotFunctions/
-      Handler: handler.getAllPublicSpotsFunction
+      Handler: handler.getAllPublicSpots
       Runtime: nodejs8.10 
       Policies:
         - DynamoDBCrudPolicy:
@@ -49,7 +49,7 @@ Resources:
             Path: /spot
             Method: get
 
-  SavePublicSpotFunction:
+  SavePublicSpot:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: SpotFunctions/
@@ -125,7 +125,25 @@ Resources:
             Path: /spot
             Method: put
 
-
+  deleteSpot:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: SpotFunctions/
+      Handler: handler.deleteSpot
+      Runtime: nodejs8.10 
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: 'SpotGeoTable'
+      Layers: 
+        - !Ref SpotLayer 
+      Events:
+        DeleteSpot:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref ServiceApi
+            Path: /spot
+            Method: delete
+ 
   SpotLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
