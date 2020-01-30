@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * This method is used to validate the structure of
+ * a spot object before it is persisted.
+ * @param {JSON} spot contains the spot JSON object.
+ * @return {boolean} Indicates whether or not it is a valid spot.
+ */
 exports.validateSpot = (spot) => {
   console.log('validating spot: ' + JSON.stringify(spot));
 
@@ -42,6 +48,11 @@ exports.validateSpot = (spot) => {
 
   if (spot.rating == null || !typeof spot.rating === 'number') {
     console.log('invalid rating');
+    return false;
+  }
+
+  if (spot.spotType == false || !typeof spot.spotType === 'string') {
+    console.log('invalid type');
     return false;
   }
 

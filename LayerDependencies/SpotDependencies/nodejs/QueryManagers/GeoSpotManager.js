@@ -15,11 +15,15 @@ module.exports.initializeDynamoClient = (newDynamo) => {
   dynamo = newDynamo;
 };
 
+/**
+ * This method gets all public spots.
+ * @return {JSON} Returns all public spots.
+ */
 module.exports.getAllPublicSpots = () => {
   console.log('table name: ' + tableNames.names.spots);
   const params = {
     TableName: tableNames.names.spots,
-    ProjectionExpression: '#isPrivate, hashKey, rangeKey, spotName, geoJson, submittedBy, rating',
+    ProjectionExpression: '#isPrivate, hashKey, rangeKey, spotName, geoJson, submittedBy, rating, spotType',
     FilterExpression: '#isPrivate = :isPrivate',
     ExpressionAttributeNames: {
       '#isPrivate': 'isPrivate',
@@ -29,6 +33,26 @@ module.exports.getAllPublicSpots = () => {
     },
   };
 
+  return dynamoClient.scan(params).promise();
+};
+
+/**
+ * Gets all spots that belong to a given user.
+ * @param {String} username contains the username.
+ * @return {JSON} returns all spots created by a user.
+ */
+module.exports.getUserSpots = (username) => {
+  const params = {
+    TableName: tableNames.names.spots,
+    ProjectionExpression: 'isPrivate, hashKey, rangeKey, spotName, geoJson, #submittedBy, rating, spotType',
+    FilterExpression: '#submittedBy = :submittedBy',
+    ExpressionAttributeNames: {
+      '#submittedBy': 'submittedBy',
+    },
+    ExpressionAttributeValues: {
+      ':submittedBy': username,
+    },
+  };
   return dynamoClient.scan(params).promise();
 };
 
@@ -98,13 +122,13 @@ module.exports.saveSpot = (spot) => {
       S: uuid(),
     },
     GeoPoint: {
-      latitude: spot.latitude,
-      longitude: spot.longitude,
+      latitude: spot.geoJson.coordinates[1],
+      longitude: spot.geoJson.coordinates[0],
     },
     PutItemInput: {
       Item: {
         spotName: {
-          S: spot.name,
+          S: spot.spotName,
         },
         submittedBy: {
           S: spot.submittedBy,
@@ -114,6 +138,12 @@ module.exports.saveSpot = (spot) => {
         },
         rating: {
           N: '0',
+        },
+        spotType: {
+          S: spot.spotType,
+        },
+        imageList: {
+          SS: ['placeholder'],
         },
       },
     },
@@ -138,7 +168,8 @@ module.exports.updateSpot = (spot) => {
       UpdateExpression: 'SET  isPrivate = :isPrivate ,' +
         'spotName = :spotName , ' +
         'submittedBy = :submittedBy ,' +
-        'rating = :rating',
+        'rating = :rating ,' +
+        'spotType = :spotType',
       ExpressionAttributeValues: {
         ':isPrivate': {
           BOOL: spot.isPrivate,
@@ -151,6 +182,9 @@ module.exports.updateSpot = (spot) => {
         },
         ':rating': {
           N: spot.rating.toString(),
+        },
+        ':spotType': {
+          S: spot.spotType,
         },
       },
     },

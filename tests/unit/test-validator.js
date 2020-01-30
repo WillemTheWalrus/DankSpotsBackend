@@ -22,6 +22,7 @@ const validSpotJson = {
   submittedBy: 'will',
   isPrivate: false,
   rating: 0,
+  spotType: 'spot',
 };
 
 describe('Spot validating ', () => {

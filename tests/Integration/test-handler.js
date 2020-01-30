@@ -10,6 +10,9 @@ const assert = chai.assert;
 const validator =
   require('../../LayerDependencies/SpotDependencies/nodejs/spotValidator');
 
+
+// TODO: write integration tests for save, delete, radial, bounding box, and user spot endponits.
+
 describe('Test get all spot function ', () => {
   it('should return a json object with all the valid spot data', (done) => {
     axios.get('http://127.0.0.1:3000/spot').then((result) => {

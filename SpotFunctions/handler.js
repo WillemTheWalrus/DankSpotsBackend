@@ -1,13 +1,15 @@
 'use strict';
 const geoSpotManager = require('/opt/nodejs/QueryManagers/GeoSpotManager');
 const spotValidator = require('/opt/nodejs/spotValidator');
+const tableNames = require('/opt/nodejs/QueryManagers/TableNames');
+const ImageManager = require('/opt/nodejs/ImageManager');
 
 
 /**
  * Gets all public spots and sends them back in the callback function.
- * @param {json} event contains path, headers, http method, and body.
- * @param {json} context  contains environment data.
- * @param {function} callback  contains the callback method to be
+ * @param {JSON} event contains path, headers, http method, and body.
+ * @param {JSON} context  contains environment data.
+ * @param {CallableFunction} callback  contains the callback method to be
  *  called when the function has finished executing.
  */
 exports.getAllPublicSpots = (event, context, callback) => {
@@ -23,9 +25,9 @@ exports.getAllPublicSpots = (event, context, callback) => {
 
 /**
  * Gets all spots in a specifified circular region.
- * @param {json} event contains path, headers, http method, and body.
- * @param {json} context  contains environment data.
- * @param {function} callback  contains the callback method to be
+ * @param {JSON} event contains path, headers, http method, and body.
+ * @param {JSON} context  contains environment data.
+ * @param {CallableFunction} callback  contains the callback method to be
  *  called when the function has finished executing.
  */
 exports.getAllSpotsInCircle = (event, context, callback) => {
@@ -53,9 +55,9 @@ exports.getAllSpotsInCircle = (event, context, callback) => {
 
 /**
  * Saves a public spot.
- * @param {json} event contains path, headers, http method, and body.
- * @param {json} context  contains environment data.
- * @param {function} callback  contains the callback method to be
+ * @param {JSON} event contains path, headers, http method, and body.
+ * @param {JSON} context  contains environment data.
+ * @param {CallableFunction} callback  contains the callback method to be
  *  called when the function has finished executing.
  */
 exports.savePublicSpot = (event, context, callback) => {
@@ -63,20 +65,25 @@ exports.savePublicSpot = (event, context, callback) => {
   // Need to investigate why this happening despite
   // the incluse of the application/JSON header.
   const spotJSON = JSON.parse(event.body);
-  geoSpotManager.saveSpot(spotJSON.spot)
-      .then((response) => {
-        sendResponse(200, response, callback);
-      });
+  if (!spotValidator.validateSpot(spotJSON)) {
+    sendResponse(400, 'Incorrectly formated spot', callback);
+  } else {
+    geoSpotManager.saveSpot(spotJSON.spot)
+        .then((response) => {
+          sendResponse(200, response, callback);
+        });
+  }
 };
 
+// TODO: add in delete functionality
 exports.deleteSpot = (event, context, callback) => {
   console.log('in delete spot function');
 };
 /**
  * Updates a spot with the provided spot data.
- * @param {json} event contains path, headers, http method, and body.
- * @param {json} context  contains environment data.
- * @param {function} callback  contains the callback method to be
+ * @param {JSON} event contains path, headers, http method, and body.
+ * @param {JSON} context  contains environment data.
+ * @param {CallableFunction} callback  contains the callback method to be
  *  called when the function has finished executing.
  */
 exports.updateSpot = (event, context, callback) => {
@@ -97,9 +104,9 @@ exports.updateSpot = (event, context, callback) => {
 
 /**
  * Gets a spot and all of its fields by its ID (hashKey + rangeKey).
- * @param {json} event constains path, headers, http method, and body.
- * @param {json} context  contains environment data.
- * @param {function} callback  contains the callback method to be
+ * @param {JSON} event constains path, headers, http method, and body.
+ * @param {JSON} context  contains environment data.
+ * @param {CallableFunction} callback  contains the callback method to be
  *  called when the function has finished executing.
  */
 exports.getSpotById = (event, context, callback) => {
@@ -118,11 +125,26 @@ exports.getSpotById = (event, context, callback) => {
 };
 
 
+exports.GetImageUploadURL = (event, context, callback) => {
+  // Right the body comes in as text instead of JSON.
+  // Need to investigate why this happening despite
+  // the incluse of the application/JSON header.
+  console.log(JSON.stringify(event));
+  console.log(JSON.stringify(context));
+  ImageManager.DankspotsImageUploadService(context)
+      .then((response) => {
+        console.log('Image Uploaded');
+        sendResponse(200, response, callback);
+      });
+};
+
 /**
  * Sends a response with the given content and status code
- * @param {*} statusCode
- * @param {*} message
- * @param {*} callback
+ * @param {Number} statusCode contians the HTTP status code to be returned in the response.
+ * @param {String} message contians a message to be sent
+ *  back with the response.
+ * @param {CallableFunction} callback contains the callback method that is
+ *  called to return the response to the client.
  */
 function sendResponse(statusCode, message, callback) {
   const response = {

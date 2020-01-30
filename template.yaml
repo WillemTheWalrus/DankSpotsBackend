@@ -35,7 +35,7 @@ Resources:
     Properties:
       CodeUri: SpotFunctions/
       Handler: handler.getAllPublicSpots
-      Runtime: nodejs8.10 
+      Runtime: nodejs12.x
       Policies:
         - DynamoDBCrudPolicy:
             TableName: 'SpotGeoTable'
@@ -54,7 +54,7 @@ Resources:
     Properties:
       CodeUri: SpotFunctions/
       Handler: handler.savePublicSpot
-      Runtime: nodejs8.10 
+      Runtime: nodejs12.x
       Policies:
         - DynamoDBCrudPolicy:
             TableName: 'SpotGeoTable'
@@ -73,7 +73,7 @@ Resources:
     Properties:
       CodeUri: SpotFunctions/
       Handler: handler.getAllSpotsInCircle
-      Runtime: nodejs8.10 
+      Runtime: nodejs12.x
       Policies:
         - DynamoDBCrudPolicy:
             TableName: 'SpotGeoTable'
@@ -92,7 +92,7 @@ Resources:
     Properties:
       CodeUri: SpotFunctions/
       Handler: handler.getSpotById
-      Runtime: nodejs8.10 
+      Runtime: nodejs12.x
       Policies:
         - DynamoDBCrudPolicy:
             TableName: 'SpotGeoTable'
@@ -111,7 +111,7 @@ Resources:
     Properties:
       CodeUri: SpotFunctions/
       Handler: handler.updateSpot
-      Runtime: nodejs8.10 
+      Runtime: nodejs12.x
       Policies:
         - DynamoDBCrudPolicy:
             TableName: 'SpotGeoTable'
@@ -130,7 +130,7 @@ Resources:
     Properties:
       CodeUri: SpotFunctions/
       Handler: handler.deleteSpot
-      Runtime: nodejs8.10 
+      Runtime: nodejs12.x
       Policies:
         - DynamoDBCrudPolicy:
             TableName: 'SpotGeoTable'
@@ -150,6 +150,17 @@ Resources:
       LayerName: spot-dependencies
       Description: Dependencies for spot functions
       ContentUri: LayerDependencies/SpotDependencies
+      CompatibleRuntimes:
+        - nodejs8.10
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+
+  ImageLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: image-dependencies
+      Description: Dependencies for images 
+      ContentUri: LayerDependencies/Images
       CompatibleRuntimes:
         - nodejs8.10
       LicenseInfo: 'MIT'
@@ -176,12 +187,60 @@ Resources:
       GenerateSecret: false
       UserPoolId: !Ref UserPool
 
+  ImageBucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      AccessControl: PublicRead
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - HEAD
+              - GET
+              - PUT
+              - POST
+            AllowedOrigins:
+              - "*"
+
+  ImageBucketPublicReadPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ImageBucket
+      PolicyDocument:
+        Statement:
+          - Action: s3:GetObject
+            Effect: Allow
+            Principal: "*"
+            Resource: !Join ["", ["arn:aws:s3:::", !Ref "ImageBucket", "/*" ]]
+
+  ImageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: SpotFunctions/
+      Handler: handler.GetImageUploadURL
+      Runtime: nodejs12.x
+      Layers: 
+        - !Ref ImageLayer
+        - !Ref SpotLayer
+      Policies:
+        - AmazonS3FullAccess
+      Environment:
+        Variables:
+          IMAGE_BUCKET_NAME: !Ref ImageBucket
+      Events:
+        CreateImage:
+          Type: Api
+          Properties:
+            Path: /images
+            Method: GET
+
 Outputs:
 #   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
 #   # Find out more about other implicit resources you can reference within SAM
 #   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   ApiEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Description: "API Gateway endpoint URL for Prod stage for Dank Spots application"
     Value: !Sub "https://${ServiceApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/spot/"
 #   HelloWorldFunction:
 #     Description: "Hello World Lambda Function ARN"
