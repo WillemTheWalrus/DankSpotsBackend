@@ -1,8 +1,6 @@
 'use strict';
 const geoSpotManager = require('/opt/nodejs/QueryManagers/GeoSpotManager');
 const spotValidator = require('/opt/nodejs/spotValidator');
-const tableNames = require('/opt/nodejs/QueryManagers/TableNames');
-const ImageManager = require('/opt/nodejs/ImageManager');
 
 
 /**
@@ -15,11 +13,10 @@ const ImageManager = require('/opt/nodejs/ImageManager');
 exports.getAllPublicSpots = (event, context, callback) => {
   geoSpotManager.getAllPublicSpots()
       .then((response) => {
-        console.log(response);
         sendResponse(200, response, callback);
       }).catch((error) => {
-        console.log('error while executing query');
-        sendResponse(500, 'Error while fethcing public spots from table: ' + error, callback);
+        console.log('error while executing query: ' + error);
+        sendResponse(500, 'Error while fethcing public spots from table', callback);
       });
 };
 
@@ -125,18 +122,7 @@ exports.getSpotById = (event, context, callback) => {
 };
 
 
-exports.GetImageUploadURL = (event, context, callback) => {
-  // Right the body comes in as text instead of JSON.
-  // Need to investigate why this happening despite
-  // the incluse of the application/JSON header.
-  console.log(JSON.stringify(event));
-  console.log(JSON.stringify(context));
-  ImageManager.DankspotsImageUploadService(context)
-      .then((response) => {
-        console.log('Image Uploaded');
-        sendResponse(200, response, callback);
-      });
-};
+
 
 /**
  * Sends a response with the given content and status code

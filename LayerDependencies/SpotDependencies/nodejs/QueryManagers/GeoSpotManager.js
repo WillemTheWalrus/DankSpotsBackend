@@ -169,7 +169,8 @@ module.exports.updateSpot = (spot) => {
         'spotName = :spotName , ' +
         'submittedBy = :submittedBy ,' +
         'rating = :rating ,' +
-        'spotType = :spotType',
+        'spotType = :spotType, ' +
+        'imageList = :spotImageList',
       ExpressionAttributeValues: {
         ':isPrivate': {
           BOOL: spot.isPrivate,
@@ -185,6 +186,9 @@ module.exports.updateSpot = (spot) => {
         },
         ':spotType': {
           S: spot.spotType,
+        },
+        ':spotImageList': {
+          SS: spot.imageList,
         },
       },
     },

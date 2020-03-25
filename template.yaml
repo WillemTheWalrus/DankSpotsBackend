@@ -151,7 +151,7 @@ Resources:
       Description: Dependencies for spot functions
       ContentUri: LayerDependencies/SpotDependencies
       CompatibleRuntimes:
-        - nodejs8.10
+        - nodejs12.x
       LicenseInfo: 'MIT'
       RetentionPolicy: Retain
 
@@ -162,7 +162,7 @@ Resources:
       Description: Dependencies for images 
       ContentUri: LayerDependencies/Images
       CompatibleRuntimes:
-        - nodejs8.10
+        - nodejs12.x
       LicenseInfo: 'MIT'
       RetentionPolicy: Retain
 
@@ -187,9 +187,10 @@ Resources:
       GenerateSecret: false
       UserPoolId: !Ref UserPool
 
-  ImageBucket:
+  dankimagebucket:
     Type: AWS::S3::Bucket
     Properties: 
+      BucketName: dankimagebucket
       AccessControl: PublicRead
       CorsConfiguration:
         CorsRules:
@@ -203,37 +204,37 @@ Resources:
             AllowedOrigins:
               - "*"
 
-  ImageBucketPublicReadPolicy:
+  dankimagebucketPublicReadPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref ImageBucket
+      Bucket: !Ref dankimagebucket
       PolicyDocument:
         Statement:
           - Action: s3:GetObject
             Effect: Allow
             Principal: "*"
-            Resource: !Join ["", ["arn:aws:s3:::", !Ref "ImageBucket", "/*" ]]
+            Resource: !Join ["", ["arn:aws:s3:::", !Ref "dankimagebucket", "/*" ]]
 
   ImageFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: SpotFunctions/
-      Handler: handler.GetImageUploadURL
+      CodeUri: ImageFunctions/
+      Handler: handler.uploadImage
       Runtime: nodejs12.x
       Layers: 
         - !Ref ImageLayer
-        - !Ref SpotLayer
       Policies:
         - AmazonS3FullAccess
       Environment:
         Variables:
-          IMAGE_BUCKET_NAME: !Ref ImageBucket
+          IMAGE_BUCKET_NAME: !Ref dankimagebucket
       Events:
         CreateImage:
           Type: Api
           Properties:
+            RestApiId: !Ref ServiceApi
             Path: /images
-            Method: GET
+            Method: POST
 
 Outputs:
 #   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
