@@ -28,7 +28,20 @@ Resources:
         Authorizers:
           DankCognitoAuthorizer:
             UserPoolArn: !GetAtt UserPool.Arn
-      
+  
+  AddNewUserToTable:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/user
+      Handler: handler.hello
+      Runtime: nodejs12.x
+      Events:
+        CognitoUserPoolPostSignup:
+          Type: Cognito
+          Properties:
+            UserPool:
+              Ref: UserPool
+            Trigger: SignUp
 
   GetAllPublicSpots:
     Type: AWS::Serverless::Function
